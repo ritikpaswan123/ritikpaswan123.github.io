@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ByteCare Remote Support</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --site-primary: #155EEF;
+  --site-on-primary: #FFFFFF;
+  --site-secondary: #EAF1FF;
+  --site-on-secondary: #142B55;
+  --site-background: #F7F9FC;
+  --site-on-background: #152238;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  --surface: light-dark(#FFFFFF, #172033);
+  --muted: light-dark(#61718A, #A6B4CA);
+  --border: light-dark(#E0E7F0, #344159);
+  --soft: light-dark(#F1F5FB, #202C42);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--site-font-body); background: var(--site-background); color: var(--site-on-background); }
+#app { min-height: 100vh; background-color: var(--site-background); color: var(--site-on-background); border-radius: 0; overflow: hidden; }
+h1,h2,h3 { font-family: var(--site-font-heading); letter-spacing: -0.035em; margin: 0; }
+p { line-height: 1.65; }
+a { color: inherit; text-decoration: none; }
+button,input,select,textarea { font: inherit; }
+.container { width: min(1120px, calc(100% - 40px)); margin: auto; }
+header { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+.nav { min-height: 72px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.04em; font-size:20px; }
+.brand-mark { width:36px; height:36px; border-radius: calc(11px * var(--site-radius-scale)); display:grid; place-items:center; background:var(--site-primary); color:var(--site-on-primary); font-weight:900; }
+.navlinks { display:flex; align-items:center; gap:24px; color:var(--muted); font-size:14px; }
+.btn { border:0; border-radius:calc(12px * var(--site-radius-scale)); padding:12px 18px; background:var(--site-primary); color:var(--site-on-primary); font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.btn.secondary { background:var(--site-secondary); color:var(--site-on-secondary); border:1px solid var(--border); }
+.btn:hover { filter:brightness(.96); }
+.hero { padding:78px 0 70px; background:linear-gradient(120deg, var(--site-background), var(--site-secondary)); position:relative; }
+.hero-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:44px; align-items:center; }
+.eyebrow { color:var(--site-primary); font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:.13em; display:flex; align-items:center; gap:9px; }
+.eyebrow:before { content:""; width:24px; height:2px; background:var(--site-primary); }
+h1 { font-size:clamp(38px, 5.4vw, 62px); line-height:1.06; margin:18px 0; }
+.hero p { color:var(--muted); max-width:560px; font-size:17px; margin:0 0 26px; }
+.hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.trustline { display:flex; gap:18px; flex-wrap:wrap; margin-top:25px; color:var(--muted); font-size:13px; }
+.trustline span:before { content:"✓"; color:#16A36A; font-weight:900; margin-right:7px; }
+.visual { background:var(--surface); border:1px solid var(--border); border-radius:calc(26px * var(--site-radius-scale)); padding:22px; box-shadow:0 24px 70px #14223812; }
+.visual-top { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:12px; margin-bottom:18px; }
+.status { background:#E4F8EE; color:#137B49; padding:6px 9px; border-radius:99px; font-weight:700; }
+.monitor { background:#0B1730; color:#E9F2FF; border-radius:16px; padding:22px; min-height:220px; position:relative; overflow:hidden; }
+.monitor:after { content:""; position:absolute; width:180px;height:180px;right:-50px;top:-70px;border-radius:50%;background:#155EEF;opacity:.22; }
+.monitor-label { font-size:11px; color:#92A8CC; letter-spacing:.1em; text-transform:uppercase; }
+.monitor h3 { margin:10px 0 16px; font-size:22px; }
+.progress { height:7px; background:#243653; border-radius:99px; overflow:hidden; margin:18px 0 10px; }
+.progress span { display:block; height:100%; width:72%; background:#55D6A2; border-radius:99px; }
+.monitor small { color:#A9BCD9; }
+.mini-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+.mini { background:var(--soft); padding:12px; border-radius:12px; font-size:12px; }
+.mini strong { display:block; font-size:17px; margin-bottom:4px; }
+section { padding:72px 0; }
+.section-head { max-width:650px; margin:0 auto 34px; text-align:center; }
+.section-head h2 { font-size:calc(34px * var(--site-heading-scale)); margin:12px 0; }
+.section-head p { color:var(--muted); margin:0; }
+.cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:calc(18px * var(--site-radius-scale)); padding:24px; }
+.iconbox { width:44px;height:44px;border-radius:12px;background:var(--site-secondary);color:var(--site-primary);display:grid;place-items:center;font-size:22px;margin-bottom:18px; }
+.card h3 { font-size:18px; margin-bottom:9px; }
+.card p { color:var(--muted); font-size:14px; margin:0; }
+.pricing { background:var(--soft); }
+.price-card { display:flex; flex-direction:column; }
+.price { font-size:32px; font-weight:850; margin:10px 0; letter-spacing:-.04em; }
+.price small { font-size:13px; font-weight:500; color:var(--muted); letter-spacing:0; }
+.features { list-style:none; padding:0; margin:16px 0 24px; color:var(--muted); font-size:14px; line-height:2; flex:1; }
+.features li:before { content:"✓"; color:#16A36A; margin-right:9px; font-weight:900; }
+.featured { border:2px solid var(--site-primary); position:relative; }
+.popular { position:absolute; right:16px; top:16px; font-size:10px; font-weight:800; color:var(--site-primary); background:var(--site-secondary); padding:6px 8px; border-radius:99px; }
+.steps { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.step { padding:20px; border:1px solid var(--border); border-radius:16px; background:var(--surface); }
+.stepnum { color:var(--site-primary); font-weight:900; font-size:13px; margin-bottom:14px; }
+.step h3 { font-size:16px; margin-bottom:8px; }
+.step p { color:var(--muted); font-size:13px; margin:0; }
+.booking { background:var(--site-secondary); }
+.booking-grid { display:grid; grid-template-columns:.8fr 1.2fr; gap:36px; align-items:start; }
+.booking-copy h2 { font-size:calc(36px * var(--site-heading-scale)); margin:14px 0; }
+.booking-copy p { color:var(--muted); }
+.notice { margin-top:22px; padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:14px; color:var(--muted); font-size:13px; line-height:1.6; }
+form { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:24px; }
+.formgrid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.field { display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
+.field.full { grid-column:1/-1; }
+label { font-size:13px; font-weight:700; }
+input,select,textarea { width:100%; padding:12px 13px; background:var(--site-background); color:var(--site-on-background); border:1px solid var(--border); border-radius:10px; outline:none; }
+input:focus,select:focus,textarea:focus { border-color:var(--site-primary); box-shadow:0 0 0 3px #155eef20; }
+textarea { min-height:100px; resize:vertical; }
+.formnote { font-size:12px; color:var(--muted); line-height:1.5; margin:12px 0; }
+#formResult { display:none; margin-top:14px; padding:13px; background:#E4F8EE; color:#137B49; border-radius:10px; font-size:13px; }
+.faq { max-width:800px; margin:auto; }
+details { background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:17px 18px; margin-bottom:10px; }
+summary { font-weight:750; cursor:pointer; }
+details p { color:var(--muted); font-size:14px; margin-bottom:0; }
+footer { background:#0B1730; color:#EAF1FF; padding:38px 0; }
+.footer-row { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+footer p { color:#9EB0CE; font-size:13px; margin:8px 0 0; }
+footer a { color:#DDE8FF; font-size:14px; }
+@media(max-width:800px) {
+ .hero-grid,.booking-grid { grid-template-columns:1fr; }
+ .hero { padding:52px 0; }
+ .cards { grid-template-columns:1fr 1fr; }
+ .steps { grid-template-columns:1fr 1fr; }
+ .navlinks a:not(.nav-cta) { display:none; }
+}
+@media(max-width:540px) {
+ .container { width:calc(100% - 28px); }
+ .cards,.steps,.formgrid { grid-template-columns:1fr; }
+ .field.full { grid-column:auto; }
+ .nav { min-height:64px; }
+ .brand { font-size:17px; }
+ .nav-cta { padding:10px 12px; font-size:12px; }
+ section { padding:54px 0; }
+ .visual { padding:14px; }
+ .mini-grid { grid-template-columns:1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="container nav">
+    <a class="brand" href="#home" aria-label="ByteCare home"><span class="brand-mark">B</span> ByteCare <span style="font-weight:500;color:var(--muted)">Remote</span></a>
+    <nav class="navlinks" aria-label="Main navigation">
+      <a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#how">How it works</a>
+      <a class="btn nav-cta" href="#booking">Book a repair ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">Remote PC & laptop support</div>
+      <h1>Your tech trouble.<br>Our next step.</h1>
+      <p>Professional remote troubleshooting for Windows PCs and laptops. Get help with software errors, slow systems, drivers and gaming performance — without leaving your desk.</p>
+      <div class="hero-actions"><a class="btn" href="#booking">Book a support session →</a><a class="btn secondary" href="#services">Explore services</a></div>
+      <div class="trustline"><span>Permission-based access</span><span>Clear pricing</span><span>Online support</span></div>
+    </div>
+    <div class="visual" aria-label="Remote support preview">
+      <div class="visual-top"><strong>BYTECARE / SUPPORT DESK</strong><span class="status">● Available</span></div>
+      <div class="monitor">
+        <div class="monitor-label">Remote session preview</div>
+        <h3>System check in progress</h3>
+        <small>Checking common software and configuration issues</small>
+        <div class="progress"><span></span></div>
+        <small>Diagnostic checklist · illustrative preview</small>
+      </div>
+      <div class="mini-grid"><div class="mini"><strong>01</strong>Diagnose</div><div class="mini"><strong>02</strong>Fix remotely</div><div class="mini"><strong>03</strong>Confirm</div></div>
+    </div>
+  </div>
+</section>
+<section id="services">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow" style="justify-content:center">What we help with</div><h2>Remote support for everyday tech problems</h2><p>Software and configuration issues that can be checked and handled online.</p></div>
+    <div class="cards">
+      <article class="card"><div class="iconbox">⌘</div><h3>Windows troubleshooting</h3><p>Common Windows errors, settings, startup issues and software configuration.</p></article>
+      <article class="card"><div class="iconbox">⚡</div><h3>Slow PC support</h3><p>Review startup apps, system load, storage usage and performance bottlenecks.</p></article>
+      <article class="card"><div class="iconbox">▧</div><h3>Drivers & updates</h3><p>Help identify driver problems and guide safe installation or updates.</p></article>
+      <article class="card"><div class="iconbox">🎮</div><h3>Gaming PC support</h3><p>Investigate crashes, stutters, graphics settings and common performance issues.</p></article>
+      <article class="card"><div class="iconbox">↻</div><h3>Boot & startup issues</h3><p>Remote guidance for selected software-related startup and recovery problems.</p></article>
+      <article class="card"><div class="iconbox">▤</div><h3>Upgrade consultation</h3><p>Get help choosing compatible RAM, SSD, GPU or other PC components.</p></article>
+    </div>
+  </div>
+</section>
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow" style="justify-content:center">Simple pricing</div><h2>Know the price before the session</h2><p>Illustrative starting prices. Final scope and price are confirmed before any remote session.</p></div>
+    <div class="cards">
+      <article class="card price-card"><h3>Basic diagnosis</h3><div class="price">₹99 <small>/ session</small></div><p>Identify likely causes and suggest next steps.</p><ul class="features"><li>Problem review</li><li>Basic checks</li><li>Clear next-step summary</li></ul><a class="btn secondary" href="#booking" data-service="Basic diagnosis">Choose diagnosis</a></article>
+      <article class="card price-card featured"><span class="popular">POPULAR</span><h3>Software support</h3><div class="price">₹149 <small>/ session</small></div><p>Help with common software and configuration issues.</p><ul class="features"><li>Remote troubleshooting</li><li>Driver / settings help</li><li>Up to 30 minutes</li></ul><a class="btn" href="#booking" data-service="Software support">Choose software support</a></article>
+      <article class="card price-card"><h3>Performance support</h3><div class="price">₹199 <small>/ session</small></div><p>Investigate slow performance and common gaming issues.</p><ul class="features"><li>Performance checks</li><li>System settings review</li><li>Up to 45 minutes</li></ul><a class="btn secondary" href="#booking" data-service="Performance support">Choose performance</a></article>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:18px">Advanced software support may be ₹299–₹499 after review. No hardware repair or guaranteed fix is implied.</p>
+  </div>
+</section>
+<section id="how">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow" style="justify-content:center">How it works</div><h2>Support in four simple steps</h2><p>You stay in control of your computer throughout the session.</p></div>
+    <div class="steps">
+      <div class="step"><div class="stepnum">STEP 01</div><h3>Tell us the issue</h3><p>Submit the booking form with your device and problem details.</p></div>
+      <div class="step"><div class="stepnum">STEP 02</div><h3>Confirm scope & price</h3><p>We review whether remote support is suitable and confirm the fee.</p></div>
+      <div class="step"><div class="stepnum">STEP 03</div><h3>Approve access</h3><p>You approve a one-time remote session and can stop it at any time.</p></div>
+      <div class="step"><div class="stepnum">STEP 04</div><h3>Review the result</h3><p>We explain what was checked and share recommended next steps.</p></div>
+    </div>
+  </div>
+</section>
+<section class="booking" id="booking">
+  <div class="container booking-grid">
+    <div class="booking-copy">
+      <div class="eyebrow">Book a support session</div>
+      <h2>Let’s get your device working better.</h2>
+      <p>Share a few details about your PC or laptop. We’ll review the issue and confirm whether it can be handled remotely.</p>
+      <div class="notice"><strong>Remote access safety</strong><br>Access is only with your clear permission. Never share passwords, OTPs or banking details. Close private files before a session.</div>
+    </div>
+    <form id="bookingForm">
+      <div class="formgrid">
+        <div class="field"><label for="name">Your name *</label><input id="name" name="name" required placeholder="Name"></div>
+        <div class="field"><label for="contact">Email or phone *</label><input id="contact" name="contact" required placeholder="How can we reach you?"></div>
+        <div class="field"><label for="device">Device *</label><select id="device" name="device" required><option value="">Choose device</option><option>Windows desktop PC</option><option>Windows laptop</option><option>Other</option></select></div>
+        <div class="field"><label for="service">Service *</label><select id="service" name="service" required><option value="">Choose service</option><option>Basic diagnosis — ₹99</option><option>Software support — ₹149</option><option>Performance support — ₹199</option><option>Advanced issue — quote first</option><option>Upgrade consultation</option></select></div>
+        <div class="field full"><label for="problem">Describe the problem *</label><textarea id="problem" name="problem" required placeholder="What happens? Any error message?"></textarea></div>
+        <div class="field full"><label for="time">Preferred time (optional)</label><input id="time" name="time" placeholder="e.g. weekday evening"></div>
+      </div>
+      <p class="formnote">Prototype booking form: it prepares a request summary on this page but does not send or store your information. A live business needs a secure form backend or booking service.</p>
+      <button class="btn" type="submit" style="width:100%">Prepare booking request →</button>
+      <div id="formResult" role="status"></div>
+    </form>
+  </div>
+</section>
+<section id="faq">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow" style="justify-content:center">FAQ</div><h2>Questions before booking</h2></div>
+    <div class="faq">
+      <details><summary>Can every PC problem be fixed remotely?</summary><p>No. Remote support is best for software, configuration and diagnosis. Physical hardware faults, broken screens and component replacement require in-person service.</p></details>
+      <details><summary>Do you connect without my permission?</summary><p>No. A remote session should only start after you approve it. You can end the session whenever you want.</p></details>
+      <details><summary>Is a fix guaranteed?</summary><p>No. The cause may require hardware service, licensed software, or further testing. The scope and fee are discussed before work begins.</p></details>
+      <details><summary>Do I need to install a remote support app?</summary><p>Depending on your device and the support method, you may need to use a trusted remote-support tool. Only use it after you have verified the support provider.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="container footer-row">
+    <div><a class="brand" href="#home"><span class="brand-mark">B</span> ByteCare Remote</a><p>Remote PC & laptop software support.</p></div>
+    <div><a href="#services">Services</a>　<a href="#pricing">Pricing</a>　<a href="#booking">Book support</a><p>© <span id="year"></span> ByteCare. Demo website concept.</p></div>
+  </div>
+</footer>
+</div>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+document.querySelectorAll('[data-service]').forEach(function(link){
+  link.addEventListener('click', function(){
+    const value = link.getAttribute('data-service');
+    const select = document.getElementById('service');
+    const option = Array.from(select.options).find(o => o.text.toLowerCase().startsWith(value.toLowerCase()));
+    if(option) select.value = option.value;
+  });
+});
+document.getElementById('bookingForm').addEventListener('submit', function(event){
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const result = document.getElementById('formResult');
+  const summary = [
+    'Booking request preview',
+    'Name: ' + data.get('name'),
+    'Contact: ' + data.get('contact'),
+    'Device: ' + data.get('device'),
+    'Service: ' + data.get('service'),
+    'Problem: ' + data.get('problem'),
+    'Preferred time: ' + (data.get('time') || 'Not specified')
+  ].join('\n');
+  result.style.display = 'block';
+  result.textContent = 'Request summary prepared. This demo does not transmit or save it. For a real booking, connect a secure backend. You can copy the summary below:\n' + summary;
+});
+</script>
+</body>
+</html>
